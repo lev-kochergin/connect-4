@@ -3,7 +3,7 @@ def get_players() -> dict[str, str]:
     Prompts players for their names.
 
     Returns:
-    * players (`dict[str, str]`): The player's names, mapping from 
+    * players (`dict[str, str]`): The player's names, mapping from
       `"X"` or `"O"` to the corresponding player.
     """
     player_one: str = input("Enter Player 1's (X) name: ")
@@ -14,14 +14,14 @@ def get_players() -> dict[str, str]:
 def get_col(board: list[list], index: int) -> list:
     """
     Returns a column from list of lists, as a list.
-    
+
     Arguments:
-    * board (`list[list]`): The rectangular list of lists that 
+    * board (`list[list]`): The rectangular list of lists that
       contains the tiles and open spaces.
     * index (`int`): The column index to be retrieved.
-    
+
     Returns:
-    * col (`list`): The contents of the specified column in 
+    * col (`list`): The contents of the specified column in
       the list of lists.
     """
     return [i[index] for i in board]
@@ -29,11 +29,11 @@ def get_col(board: list[list], index: int) -> list:
 
 def get_open(board: list[list]) -> list[int]:
     """
-    Returns the indexes of the open columns in a board. A column is 
+    Returns the indexes of the open columns in a board. A column is
     considered open if the top row of the column is empty.
 
     Arguments:
-    * board (`list[list]`): The rectangular list of lists that 
+    * board (`list[list]`): The rectangular list of lists that
       contains the tiles and open spaces.
 
     Returns:
@@ -50,17 +50,17 @@ def get_open(board: list[list]) -> list[int]:
 def print_board(board: list[list]) -> None:
     """
     Displays a board to the players.
-    
+
     Arguments:
     * board (`list[list]`): The rectangular list of lists to be displayed.
     """
-    
+
     # print the open column indexes
     open_cols = get_open(board)
     print(1 if 1 in open_cols else " ", end="")
     for i in range(2, len(board[0]) + 1):
         print(f"   {i if i in open_cols else ' '}", end="")
-    
+
     # print the board contents
     print("")
     for row in board:
@@ -73,9 +73,9 @@ def print_board(board: list[list]) -> None:
 def place_tile(board: list[list], player_tile: str) -> None:
     """
     Prompts a player to pick a column to place a tile in.
-    
+
     Arguments:
-    * board (`list[list]`): The rectangular list of lists that 
+    * board (`list[list]`): The rectangular list of lists that
       contains the tiles and open spaces.
     * player_tile (`str`): The tiles the active player is playing with.
     """
@@ -95,7 +95,7 @@ def place_tile(board: list[list], player_tile: str) -> None:
 def ask_int(prompt: str) -> int:
     """
     Helper method to get an int from a user..
-    
+
     Argument:
     * prompt (`str`): The question to as the user.
 
@@ -115,7 +115,7 @@ def check_win(board: list[list], tile: str) -> bool:
     Checks if a player has won the game.
 
     Arguments:
-    * board (`list[list]`): The rectangular list of lists that 
+    * board (`list[list]`): The rectangular list of lists that
       contains the tiles and open spaces.
     * tile (`str`): The tiles the active player is playing with.
 
@@ -186,38 +186,56 @@ def start():
     Main function to start a game.
     """
 
+    print("! Welcome to Connect Four !\n")
     players: dict[str, str] = get_players()
-    print("")
-    board: list[list] = [["" for _ in range(7)] for _ in range(6)]
-    finished = False
-    active_player = "X"
+    wins: dict[str, int] = {"X": 0, "O": 0}
 
-    while not finished:
-        print(f"-- It's {players[active_player]}'s ({active_player}) turn --\n")
-        print_board(board)
+    while True:
         print("")
-        place_tile(board, active_player)
-        print("")
+        board: list[list] = [["" for _ in range(7)] for _ in range(6)]
+        finished = False
+        active_player = "O" if wins["X"] > wins["O"] else "X"  # prefers X if tied
 
-        finished = check_win(board, active_player)
+        while not finished:
+            print(f"-- It's {players[active_player]}'s ({active_player}) turn --\n")
+            print_board(board)
+            print("")
+            place_tile(board, active_player)
+            print("")
 
-        if not get_open(board):
+            finished = check_win(board, active_player)
+
+            if not get_open(board):
+                break  # from while not finished loop
+
+            if not finished:
+                active_player = next(i for i in players.keys() if i != active_player)
+
+        if finished:
+            print(f"{players[active_player]} ({active_player}) won the game! Congrats!\n")
+            wins[active_player] += 1
+
+        else:
             print("This game ended in a tie!")
-            break
 
-        if not finished:
-            active_player = next(i for i in players.keys() if i != active_player)
-
-    if finished:
-        print(f"{players[active_player]} ({active_player}) won the game! Congrats!\n")
         print_board(board)
 
-    if input("\nDo you want to play again? (yes/no): ").lower() == "yes":
-        print("")
-        start()
+        if wins["O"] == wins["X"]:
+            print(f"\nThe game is currently tied {wins['O']} - {wins['X']}")
+
+        else:
+            winning = "X" if wins["X"] > wins["O"] else "O"
+            losing = next(i for i in wins.keys() if i != winning)
+
+            print(
+                f"\n{players[winning]} ({winning}) is currently "
+                f"winning the game {wins[winning]} - {wins[losing]}"
+            )
+
+        if not input("\nDo you want to play again? (yes/no): ").lower().startswith("y"):
+            break  # from while True loop
 
 
 if __name__ == "__main__":
     # (when file is run directly)
-    print("! Welcome to Connect Four !\n")
     start()
