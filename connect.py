@@ -212,7 +212,9 @@ def start():
                 active_player = next(i for i in players.keys() if i != active_player)
 
         if finished:
-            print(f"{players[active_player]} ({active_player}) won the game! Congrats!\n")
+            print(
+                f"{players[active_player]} ({active_player}) won the game! Congrats!\n"
+            )
             wins[active_player] += 1
 
         else:

@@ -11,11 +11,13 @@ allow players to select which column to place their tile into.
 
 ## Start-Up
 
+This project was written solely in Python. If you do not have Python installed, download the latest 
+release from `https://www.python.org/downloads/` prior to attempting to run the program.
+
 Run `connect.py` with your favorite tool, such as executing it with command prompt using:
 ```cmd
 python3 connect.py
 ```
 
 The project doesn't have any external depencencies, and was written in Python 3.9 and should be 
-compatible with any Python 3 release. If you do not have Python installed, download the latest 
-release first from `https://www.python.org/downloads/`.
+compatible with any Python 3 release. 
